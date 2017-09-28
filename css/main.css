@@ -1,12 +1,25 @@
-body{
-	background-color: #041d29;
-	overflow: hidden;
+body {
+    background-color: #041d29;
+    overflow: hidden;
 }
-#window{
-	border: 1px solid #373530;
-	margin: 0px auto;
-	width: 480px;
-	height: 640px;
-	display: block;
-	padding: 0;
+
+#window,
+#background {
+    border: 1px solid #000;
+    margin: 0px auto;
+    width: 480px;
+    height: 640px;
+    display: block;
+    padding: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+#background {
+    z-index: 1;
+}
+
+#window {
+    z-index: 2;
 }

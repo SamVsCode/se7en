@@ -1,46 +1,3 @@
-var MatrixMap = (function() {
-    // function randomNumberGenerator(){}
-
-    function createMatrix(w, h) {
-        var matrix = [];
-        while (h--) {
-            matrix.push(new Array[w].fill(0));
-        }
-        return matrix;
-    }
-
-    function rotateMatrix() {}
-
-    function mergeMatrix() {}
-
-    function drawMatrix(matrix, offset, ctx) {
-        for (var i = 0; i < matrix.length; i++) {
-            for (var j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] !== 0) {
-                    ctx.fillStyle = "#ff0000";
-                    ctx.fillRect((i + offset.x) * 32, (j + offset.y) * 32, 30, 30);
-                }
-            }
-        }
-
-    }
-
-    return {
-        createMatrix: createMatrix,
-        rotateMatrix: rotateMatrix,
-        mergeMatrix: mergeMatrix,
-        drawMatrix: drawMatrix
-    };
-}());
-
-var Player = (function() {
-    return {
-        pos: { x: 0, y: 0 },
-        block: null,
-        score: 0
-    };
-}());
-
 var Blocks = (function() {
     /*
      * Each block will have a martrix with a shape. Each shape with have either 0 or a number. Each number is
@@ -87,6 +44,61 @@ var Blocks = (function() {
     };
 }());
 
+var MatrixMap = (function() {
+    var blockKeys = [];
+    for (var key in Blocks) {
+        blockKeys.push(key);
+    }
+
+    function randomNumberGenerator() {
+        return blockKeys.length * Math.random() | 0;
+    }
+
+    function createMatrix(w, h) {
+        var matrix = [];
+        while (h--) {
+            matrix.push(new Array[w].fill(0));
+        }
+        return matrix;
+    }
+
+    function rotateMatrix() {}
+
+    function mergeMatrix() {}
+
+    function drawMatrix(matrix, offset, ctx) {
+        for (var i = 0; i < matrix.length; i++) {
+            for (var j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] !== 0) {
+                    ctx.fillStyle = "#ff0000";
+                    ctx.fillRect((i + offset.x) * 32, (j + offset.y) * 32, 30, 30);
+                }
+            }
+        }
+
+    }
+
+    return {
+        createMatrix: createMatrix,
+        rotateMatrix: rotateMatrix,
+        mergeMatrix: mergeMatrix,
+        drawMatrix: drawMatrix
+    };
+}());
+
+var Player = (function() {
+    function drop() {
+        Player.pos.y++;
+    }
+    return {
+        drop: drop,
+        pos: { x: 0, y: 0 },
+        block: null,
+        score: 0
+    };
+}());
+
+
 var Game = (function() {
     function Game(w, h) {
         this.canvas = document.querySelector("#window");
@@ -120,7 +132,7 @@ var Game = (function() {
     Game.prototype.update = function(delta) {
         this.dropCounter += delta;
         if (this.dropCounter > this.configuration.speed) {
-
+            Player.drop();
             this.dropCounter = 0;
         }
     }
@@ -164,7 +176,7 @@ var Window = (function() {
     }
 
     function run() {
-        // window.requestAnimationFrame(run);
+        window.requestAnimationFrame(run);
         currentTime = (new Date()).getTime();
         delta = (currentTime - lastTime) / 1000;
         game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);

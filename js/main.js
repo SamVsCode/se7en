@@ -33,8 +33,8 @@ var Blocks = (function() {
             [1, 1, 0]
         ],
         O: [
-            [0, 0],
-            [0, 0]
+            [1, 1],
+            [1, 1]
         ],
         S: [
             [0, 1, 1],
@@ -49,15 +49,35 @@ var MatrixMap = (function() {
     for (var key in Blocks) {
         blockKeys.push(key);
     }
-
-    function randomNumberGenerator() {
-        return blockKeys.length * Math.random() | 0;
+    function getRandomNumber(min,max)
+	{
+	    return Math.floor(Math.random()*(max-min+1)+min);
+	}
+    function randomBlockGenerator() {
+    	var b = blockKeys[getRandomNumber(0,blockKeys.length-1)];
+    	console.log(b);
+        return b;
+    }
+    function mapCollision(){
+    	var m = Player.brick;
+    	var arena = Window.game.arena;
+    	var o = Player.pos;
+    	for (let y = 0; y < m.length; ++y) {
+        for (let x = 0; x < m[y].length; ++x) {
+            if (m[y][x] !== 0 &&
+               (arena[y + o.y] &&
+                arena[y + o.y][x + o.x]) !== 0) {
+                return true;
+            }
+        }
+    }
+    	return false;
     }
 
     function createMatrix(w, h) {
         var matrix = [];
         while (h--) {
-            matrix.push(new Array[w].fill(0));
+            matrix.push((new Array(w)).fill(0));
         }
         return matrix;
     }
@@ -67,9 +87,9 @@ var MatrixMap = (function() {
     function mergeMatrix() {}
 
     function drawMatrix(matrix, offset, ctx) {
-        for (var i = 0; i < matrix.length; i++) {
-            for (var j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] !== 0) {
+        for (var j = 0; j < matrix.length; j++) {
+            for (var i = 0; i < matrix[j].length; i++) {
+                if (matrix[j][i] !== 0) {
                     ctx.fillStyle = "#ff0000";
                     ctx.fillRect((i + offset.x) * 32, (j + offset.y) * 32, 30, 30);
                 }
@@ -79,22 +99,42 @@ var MatrixMap = (function() {
     }
 
     return {
+    	getRandomNumber: getRandomNumber,
+    	randomBlockGenerator: randomBlockGenerator,
         createMatrix: createMatrix,
         rotateMatrix: rotateMatrix,
         mergeMatrix: mergeMatrix,
-        drawMatrix: drawMatrix
+        drawMatrix: drawMatrix,
+        mapCollision: mapCollision
     };
 }());
 
 var Player = (function() {
+	var pos = { x: 0, y: 0 };
+	var brick = Blocks[MatrixMap.randomBlockGenerator()];
     function drop() {
         Player.pos.y++;
+        console.log(MatrixMap.mapCollision());
+        if(MatrixMap.mapCollision()){
+        	Player.pos.y--;
+        	Player.brick = nextBrick();
+        }
+    }
+    function move(i){
+    	Window.game.Player.pos.x+=i;
+    }
+    function nextBrick(){
+    	Player.pos.y = 0;
+    	return Blocks[MatrixMap.randomBlockGenerator()];
     }
     return {
         drop: drop,
-        pos: { x: 0, y: 0 },
+        pos: pos,
         block: null,
-        score: 0
+        score: 0,
+        nextBrick: nextBrick,
+        move: move,
+        brick:brick
     };
 }());
 
@@ -106,7 +146,6 @@ var Game = (function() {
         this.ctx = this.canvas.getContext('2d');
         this.bgctx = this.bgCanvas.getContext('2d');
         this.dropCounter = 0;
-
         if (w || h) {
             if (w) {
                 this.canvas.width = w;
@@ -120,14 +159,17 @@ var Game = (function() {
 
         this.configuration = {
             speed: 1,
-            gravity: 10,
+            gravity: 0.30,
             score: 0,
             grid: 32
         };
+        this.Player = Player;
+        this.arena = MatrixMap.createMatrix(Math.floor(this.canvas.width/this.configuration.grid),Math.floor(this.canvas.height/this.configuration.grid));
+        console.log(this.arena);
     }
 
     Game.prototype.draw = function() {
-        MatrixMap.drawMatrix(Blocks.T, Player.pos, this.ctx);
+        MatrixMap.drawMatrix(this.Player.brick, this.Player.pos, this.ctx);
     }
     Game.prototype.update = function(delta) {
         this.dropCounter += delta;
@@ -136,7 +178,14 @@ var Game = (function() {
             this.dropCounter = 0;
         }
     }
-    Game.prototype.keyPressed = function(key) {}
+    Game.prototype.keyPressed = function(key) {
+    	if(key===37){
+    		Window.game.Player.move(-1);
+    	}
+    	if(key===39){
+    		Window.game.Player.move(1);
+    	}
+    }
     Game.prototype.keyReleased = function(key) {}
 
     return Game;
@@ -159,7 +208,7 @@ var Window = (function() {
         document.addEventListener('keyup', function(e) {
             game.keyReleased(e.keyCode);
         }, false);
-        document.addEventListener('keyrelease', function(e) {
+        document.addEventListener('keydown', function(e) {
             game.keyPressed(e.keyCode);
         }, false)
         bgctx.strokeStyle = "#443266";
@@ -187,7 +236,8 @@ var Window = (function() {
 
     return {
         init: init,
-        run: run
+        run: run,
+        game: game
     };
 
 }());

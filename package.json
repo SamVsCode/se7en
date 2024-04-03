@@ -31,6 +31,7 @@
     "react-dom": "^16.10.1",
     "react-flag-kit": "^0.3.1",
     "react-intl": "^2.6.0",
-    "react-map-gl": "^5.2.10"
+    "react-map-gl": "^5.2.10",
+    "@tidyjs/tidy": "2.3.0"
   }
 }

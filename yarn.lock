@@ -155,6 +155,11 @@ csstype@^3.0.2:
   resolved "https://packages.atlassian.com/api/npm/npm-remote/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
+d3-array@1.2.1:
+  version "1.2.1"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/d3-array/-/d3-array-1.2.1.tgz#d1ca33de2f6ac31efadb8e050a021d7e2396d5dc"
+  integrity sha512-CyINJQ0SOUHojDdFDH4JEM0552vCR1utGyLHegJHyYH0JyCpSeTPxi4OBqHMA2jJZq4NH782LtaJWBImqI/HBw==
+
 debounce-promise@^3.1.2:
   version "3.1.2"
   resolved "https://packages.atlassian.com/api/npm/npm-remote/debounce-promise/-/debounce-promise-3.1.2.tgz#320fb8c7d15a344455cd33cee5ab63530b6dc7c5"
